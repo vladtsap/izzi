@@ -28,8 +28,8 @@ class User(models.Model):
 	birthDate = models.DateField()
 	registrationDate = models.DateField(db_index=True)
 
-	orderID = models.ForeignKey(Order, related_name='order', on_delete=models.CASCADE, db_index=True, blank=True, null=True)
-
+	orderID = models.ForeignKey(Order, related_name='order', on_delete=models.CASCADE, db_index=True, blank=True,
+								null=True)
 
 	class Meta:
 		db_table = "users"
@@ -37,3 +37,13 @@ class User(models.Model):
 
 	def __str__(self):
 		return " ".format(str(self.firstName), str(self.lastName))
+
+
+class UploadFile(models.Model):
+	data = models.FileField(upload_to="temp/")
+
+	def save(self, *args, **kwargs):
+		super(UploadFile, self).save(*args, **kwargs)
+		filename = self.data.url
+		with open(filename, 'r') as f:
+			print(f.read())
