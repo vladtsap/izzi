@@ -1,12 +1,10 @@
 from django.db import models
-import uuid
 
 
 class Order(models.Model):
 	"""Orders model"""
 
-	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-	index = models.PositiveIntegerField(default=0)
+	id = models.AutoField(primary_key=True)
 	slug = models.SlugField()
 
 	itemName = models.CharField(max_length=200)
@@ -14,24 +12,28 @@ class Order(models.Model):
 
 	class Meta:
 		db_table = "orders"
-		ordering = ["index"]
+		ordering = ["id"]
+
+	def __str__(self):
+		return "{} — order #{}".format(str(self.itemName), str(self.id))
 
 
 class User(models.Model):
 	"""User model"""
 
-	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-	slug = models.SlugField(unique=True)
-	index = models.PositiveIntegerField(default=0)
+	id = models.AutoField(primary_key=True)
 
 	firstName = models.CharField(max_length=200)
 	lastName = models.CharField(max_length=200)
 	birthDate = models.DateField()
 	registrationDate = models.DateField(db_index=True)
 
-	orderID = models.ForeignKey(Order, related_name='orderID', on_delete=models.CASCADE, db_index=True, null=True)
+	orderID = models.ForeignKey(Order, related_name='order', on_delete=models.CASCADE, db_index=True, blank=True, null=True)
+
 
 	class Meta:
 		db_table = "users"
-		ordering = ["index"]
+		ordering = ["id"]
 
+	def __str__(self):
+		return " ".format(str(self.firstName), str(self.lastName))
