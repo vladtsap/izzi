@@ -1,4 +1,5 @@
 from django.db import models
+import os
 
 
 class Order(models.Model):
@@ -40,10 +41,26 @@ class User(models.Model):
 
 
 class UploadFile(models.Model):
-	data = models.FileField(upload_to="temp/")
+	file = models.FileField()
 
 	def save(self, *args, **kwargs):
+		"""Parse .csv and save new users to db"""
 		super(UploadFile, self).save(*args, **kwargs)
-		filename = self.data.url
-		with open(filename, 'r') as f:
-			print(f.read())
+		filename = self.file.url
+
+		with open(filename, 'r') as file:
+			data = file.read()
+			data = data[data.index('\n') + 1:]
+			for line in data.split('\n'):
+				first_name, last_name, birth_date, registration_date = line.split(',')
+
+				new_user = User(
+					firstName=first_name,
+					lastName=last_name,
+					birthDate=birth_date.replace('/', '-'),
+					registrationDate=registration_date.replace('/', '-')
+				)
+				new_user.save()
+
+		os.remove(filename)  # don't leave anything in our folder
+		UploadFile.objects.filter(file=filename).delete()  # and also nothing in our db
