@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 
 
-class Orders(models.Model):
+class Order(models.Model):
 	"""Orders model"""
 
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -29,7 +29,7 @@ class User(models.Model):
 	birthDate = models.DateField()
 	registrationDate = models.DateField(db_index=True)
 
-	orderID = models.ForeignKey(Orders, related_name='orderID', on_delete=models.CASCADE, db_index=True, null=True)
+	orderID = models.ForeignKey(Order, related_name='orderID', on_delete=models.CASCADE, db_index=True, null=True)
 
 	class Meta:
 		db_table = "users"
